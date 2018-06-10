@@ -1,0 +1,11 @@
+ul.wo-social-icons > li {
+	margin: auto 3px;
+	list-style: none;
+	display: inline-block;
+	vertical-align: top;
+}
+
+ul.wo-social-icons > li a {
+	padding: 0.5em;
+	display: block;
+}

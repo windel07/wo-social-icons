@@ -1,0 +1,70 @@
+.widget p {
+	margin: 0 auto 1em;
+}
+
+.widget p.radius {
+	width: calc( 75% - 5px );
+	padding-right: 5px;
+}
+
+.widget p.unit {
+	width: calc( 25% - 5px );
+	padding-left: 5px;
+}
+
+.widget .wo_social_icons-sortable {
+	clear: both;
+}
+
+.widget .wo_social_icons-sortable > li.wosi-state-highlight {
+	height: 40px;
+	border: 1px dashed #b3b3b3;
+}
+
+.widget .wo_social_icons-sortable > li h3.ui-accordion-header {
+	background-color: #fafafa;
+	padding: 10px;
+	margin: auto;
+	border: 1px solid #e5e5e5;
+	font-size: 1em;
+	font-weight: 400;
+	cursor: move;
+	position: relative;
+}
+
+.widget .wo_social_icons-sortable > li h3.ui-accordion-header.ui-state-hover {
+	border: 1px solid #b3b3b3;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content {
+	padding: 10px;
+	border: 1px solid #e5e5e5;
+	border-top: 0;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content p {
+	margin: 0 auto 10px;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content p label {
+	margin: 0 auto 5px;
+	display: block;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .colors legend {
+	color: #757575;
+	padding: 0 0 10px;
+	margin: 0 auto 10px;
+	border-bottom: 1px solid #e7e7e7;
+	font-weight: 600;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .colors > p:not(.clear) {
+	width: 50%;
+	margin: auto;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .colors .wp-picker-container .iris-picker {
+	background-color: #fff;
+	z-index: 9;
+}

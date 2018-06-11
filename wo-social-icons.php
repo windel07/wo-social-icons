@@ -55,10 +55,11 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 
 			$this->icons = apply_filters( 'wosi_default_icons', [
 				0 	=> 'facebook',
-				1 	=> 'google-plus',
-				2 	=> 'instagram',
-				3 	=> 'linkedin',
-				4 	=> 'twitter'
+				1 	=> 'github',
+				2 	=> 'google-plus',
+				3 	=> 'instagram',
+				4 	=> 'linkedin',
+				5 	=> 'twitter',
 			]);
 
 			add_action( 'admin_enqueue_scripts', [ $this, 'adminEnqueueStylesScripts' ] );
@@ -153,7 +154,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 
 			<ul id="<?php echo $this->id; ?>-sortable" class="<?php echo $this->widget_options['classname']; ?>-sortable">
 				<?php foreach( $icons as $icon ) : ?>
-				<li id="<?php echo $icon; ?>">
+				<li id="<?php echo $icon; ?>" data-number="<?php echo $this->number; ?>">
 					<h3><?php echo ucwords( str_replace( '-', ' ', $icon ) ); ?></h3>
 					<div>
 						<p>
@@ -233,49 +234,53 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		public function enqueueStylesScripts() {
 			wp_enqueue_style( 'wo-socialicons', plugins_url( 'assets/css/wo-social-icons.css', __FILE__ ), '', $this->version );
 
+			$allInstances = $this->get_settings();
 
-			$settings = $this->get_settings()[ $this->number ];
-			$styles = '';
+			if( count( $allInstances ) > 0 ) :
+				$styles = '';
 
-			if( $settings['radius'] > 0 ) :
-				$styles .= '#' . $this->id . ' ul.wo-social-icons > li a {';
-					$styles .= 'border-radius: ' . $settings['radius'] . $settings['unit'] . ';';
-				$styles .= '}'; 
+				foreach( $allInstances as $iK => $iV ) :
+					if( $iV['radius'] > 0 ) :
+						$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li a {';
+							$styles .= 'border-radius: ' . $iV['radius'] . $iV['unit'] . ';';
+						$styles .= '}'; 
+					endif;
+
+					foreach( $this->icons as $icon ) :
+						if( 
+							! empty( $iV[$icon]['color-hover'] ) ||
+							! empty( $iV[$icon]['bg-hover'] )
+						) :
+							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-' . $icon . ' a {';
+								if( ! empty( $iV[$icon]['color'] ) ) :
+									$styles .= 'color: ' . $iV[$icon]['color'] . ';';
+								endif;
+
+								if( ! empty( $iV[$icon]['bg'] ) ) :
+									$styles .= 'background-color: ' . $iV[$icon]['bg'] . ';';
+								endif;
+							$styles .= '}'; 
+						endif;
+
+						if( 
+							! empty( $iV[$icon]['color-hover'] ) ||
+							! empty( $iV[$icon]['bg-hover'] )
+						) :
+							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-' . $icon . ' a:hover {';
+								if( ! empty( $iV[$icon]['color-hover'] ) ) :
+									$styles .= 'color: ' . $iV[$icon]['color-hover'] . ';';
+								endif;
+
+								if( ! empty( $iV[$icon]['bg-hover'] ) ) :
+									$styles .= 'background-color: ' . $iV[$icon]['bg-hover'] . ';';
+								endif;
+							$styles .= '}'; 
+						endif;
+					endforeach;
+				endforeach;
+
+				wp_add_inline_style( 'wo-socialicons', $styles );
 			endif;
-
-			foreach( $this->icons as $icon ) :
-				if( 
-					! empty( $settings[ $icon ]['color-hover'] ) ||
-					! empty( $settings[ $icon ]['bg-hover'] )
-				) :
-					$styles .= '#' . $this->id . ' ul.wo-social-icons > li#wosi-' . $icon . ' a {';
-						if( ! empty( $settings[ $icon ]['color'] ) ) :
-							$styles .= 'color: ' . $settings[ $icon ]['color'] . ';';
-						endif;
-
-						if( ! empty( $settings[ $icon ]['bg'] ) ) :
-							$styles .= 'background-color: ' . $settings[ $icon ]['bg'] . ';';
-						endif;
-					$styles .= '}'; 
-				endif;
-
-				if( 
-					! empty( $settings[ $icon ]['color-hover'] ) ||
-					! empty( $settings[ $icon ]['bg-hover'] )
-				) :
-					$styles .= '#' . $this->id . ' ul.wo-social-icons > li#wosi-' . $icon . ' a:hover {';
-						if( ! empty( $settings[ $icon ]['color-hover'] ) ) :
-							$styles .= 'color: ' . $settings[ $icon ]['color-hover'] . ';';
-						endif;
-
-						if( ! empty( $settings[ $icon ]['bg-hover'] ) ) :
-							$styles .= 'background-color: ' . $settings[ $icon ]['bg-hover'] . ';';
-						endif;
-					$styles .= '}'; 
-				endif;
-			endforeach;
-
-			wp_add_inline_style( 'wo-socialicons', $styles );
 		}
 
 		/**
@@ -285,12 +290,9 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 			if( ! defined( DOING_AJAX ) && ! DOING_AJAX ) return;
 
 			$allInstances = $this->get_settings();
-			$instances = $allInstances[ $this->number ];
-			$instances['icons'] = $_POST['icons'];
+			$allInstances[$_POST['number']]['icons'] = $_POST['icons'];
 
-			$newInstances = wp_parse_args( $allInstances, $instances );
-
-			if( update_option( 'widget_wo_social_icons', $newInstances ) ) :
+			if( update_option( 'widget_wo_social_icons', $allInstances ) ) :
 				wp_send_json([
 					'success' 	=> true
 				]);
@@ -306,20 +308,58 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		 * @return array
 		 */
 		public function update( $ni, $oi ) {
-			$i = [];
-			$i['title'] = ! empty( $ni['title'] ) ? $ni['title'] : '';
-			$i['link-type'] = $ni['link-type'];
-			$i['radius'] = $ni['radius'];
-			$i['unit'] = $ni['unit'];
-			foreach( $this->icons as $icon ) :
-				$i[ $icon ]['url'] = ! empty( $ni[ $icon ]['url'] ) ? $ni[ $icon ]['url'] : '';
-				$i[ $icon ]['color'] = ! empty( $ni[ $icon ]['color'] ) ? $ni[ $icon ]['color'] : '';
-				$i[ $icon ]['color-hover'] = ! empty( $ni[ $icon ]['color-hover'] ) ? $ni[ $icon ]['color-hover'] : '';
-				$i[ $icon ]['bg'] = ! empty( $ni[ $icon ]['bg'] ) ? $ni[ $icon ]['bg'] : '';
-				$i[ $icon ]['bg-hover'] = ! empty( $ni[ $icon ]['bg-hover'] ) ? $ni[ $icon ]['bg-hover'] : '';
+			// Get all instance
+			$allInstances = $this->get_settings();
+			$icons = $allInstances[$this->number]['icons'];
+
+			$ni['icons'] = $icons;
+
+			foreach( $ni as $niK => $niV ) :
+				// Validate border radius.
+				if( 
+					$niK == 'radius' && 
+					( $niV == '' || ! ctype_digit( $niV ) )
+				) :
+					$ni[$niK] = 0;
+				endif;
 			endforeach;
 
-			return $i;
+			foreach( $this->icons as $icon ) :
+				if( ! empty( $ni[$icon]['url'] ) ) :
+					$ni[$icon]['url'] = esc_url( $ni[$icon]['url'] );
+				endif;
+
+				// Validate hex colors.
+				if( 
+					! empty( $ni[$icon]['color'] ) && 
+					preg_match( '/^#(([a-fA-F0-9]{3}$)|([a-fA-F0-9]{6}$))/', $ni[$icon]['color'] ) == 0 
+				) :
+					$ni[$icon]['color'] = $oi[$icon]['color'];
+				endif;
+
+				if( 
+					! empty( $ni[$icon]['color-hover'] ) && 
+					preg_match( '/^#(([a-fA-F0-9]{3}$)|([a-fA-F0-9]{6}$))/', $ni[$icon]['color-hover'] 
+				) == 0 ) :
+					$ni[$icon]['color-hover'] = $oi[$icon]['color-hover'];
+				endif;
+
+				if( 
+					! empty( $ni[$icon]['bg'] ) && 
+					preg_match( '/^#(([a-fA-F0-9]{3}$)|([a-fA-F0-9]{6}$))/', $ni[$icon]['bg'] ) == 0 
+				) :
+					$ni[$icon]['bg'] = $oi[$icon]['bg'];
+				endif;
+
+				if( 
+					! empty( $ni[$icon]['bg-hover'] ) && 
+					preg_match( '/^#(([a-fA-F0-9]{3}$)|([a-fA-F0-9]{6}$))/', $ni[$icon]['bg-hover'] ) == 0 
+				) :
+					$ni[$icon]['bg-hover'] = $oi[$icon]['bg-hover'];
+				endif;
+			endforeach;
+
+			return $ni;
 		}
 	}
 

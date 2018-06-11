@@ -8,16 +8,13 @@
 		}
 	});	
 
-	// WO_SocialIcons
-	function WO_SocialIcons( el ) {
-		this.element = el;
-	}
-
 	/**
-	 * Initilialize sortable.
+	 * Initilialize.
 	 */
-	WO_SocialIcons.prototype.init = function() {
-		this.element
+	function init( el ) {
+		var element = $( el );
+
+		element
 		.accordion({
 			active 			: false,
 			header 			: "> li > h3",
@@ -44,7 +41,11 @@
 					dataType 	: 'json',
 					data 		: {
 						action 		: wosi.ajax.actions.reorder,
+						number 		: $( ui.item ).attr( 'data-number' ),
 						icons 		: newIcons
+					},
+					success 	: function( r ) {
+						console.log( r );
 					},
 					error 		: function( r ) {
 						console.log( r );
@@ -54,24 +55,25 @@
 		})
 		.disableSelection();
 
-		this.element.find( '.wosi-color-picker' ).wpColorPicker({
+		element.find( '.wosi-color-picker' ).wpColorPicker({
 			change 			: function( e, ui ) {
 				$( "#widget-" + wosi.id + "-savewidget" ).removeAttr( 'disabled' );
 			}
 		});
-	};
+	}
 
-	$( document ).on( 'widget-added widget-updated', function( e, wdg ) {
-		if( wosi.widget_options.classname != 'wo_social_icons' ) return;
+	function onFormUpdate( e, wdg ) {
+		init( $( wdg ).find( '.wo_social_icons-sortable' ) );
+	}
 
-		// Initialize sortable
-		var w = new WO_SocialIcons( $( wdg ).find( '.wo_social_icons-sortable' ) );
-		w.init();
-	});
+	// On widget add
+	$( document ).on( 'widget-added widget-updated', onFormUpdate );
 
+	// On document ready
 	$(function() {
-		// Initialize sortable
-		var w = new WO_SocialIcons( $( "." + wosi.widget_options.classname + "-sortable" ) );
-		w.init();
+		// Initialize
+		$( '#widgets-right .widget:has(.wo_social_icons-sortable)' ).each(function() {
+			init( $( this ).find( '.wo_social_icons-sortable' ) );
+		});
 	});
 })(jQuery);

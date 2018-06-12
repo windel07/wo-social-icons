@@ -54,12 +54,26 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 			parent::__construct( 'wo_social_icons', 'WO Social Icons', $widgetOps );
 
 			$this->icons = apply_filters( 'wosi_default_icons', [
-				0 	=> 'facebook',
-				1 	=> 'github',
-				2 	=> 'google-plus',
-				3 	=> 'instagram',
-				4 	=> 'linkedin',
-				5 	=> 'twitter',
+				0	=> 'behance',
+				1 	=> 'dribbble',
+				2 	=> 'email',
+				3 	=> 'facebook',
+				4 	=> 'flickr',
+				5 	=> 'github',
+				6 	=> 'google-plus',
+				7 	=> 'instagram',
+				8 	=> 'linkedin',
+				9 	=> 'medium',
+				10 	=> 'phone',
+				11 	=> 'pinterest',
+				12 	=> 'rss',
+				13 	=> 'snapchat',
+				14 	=> 'stumbleupon',
+				15 	=> 'tumblr',
+				16 	=> 'twitter',
+				17 	=> 'vimeo',
+				18 	=> 'xing',
+				19	=> 'youtube'
 			]);
 
 			add_action( 'admin_enqueue_scripts', [ $this, 'adminEnqueueStylesScripts' ] );
@@ -88,10 +102,29 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				<ul class="wo-social-icons">
 				<?php 
 				foreach( $icons as $icon ) : 
-					if( ! empty( $i[ $icon ]['url'] ) ) :
+					if( ! empty( $i[$icon]['url'] ) ) :
+
+					if( 
+						$icon == 'email' &&
+						is_email( $i[$icon]['url'] ) 
+					) :
+						$iconClass = 'envelope-o';
+						$i[$icon]['url'] = 'mailto:' . $i[$icon]['url'];
+					elseif( 
+						$icon == 'phone' &&
+						$this->validatePhone( $i[$icon]['url'] )
+					) :
+						$i[$icon]['url'] = 'tel:' . $i[$icon]['url'];
+					else :
+						$iconClass = $icon;
+					endif;
 				?>
 					<li id="wosi-<?php echo $icon; ?>">
-						<a href="<?php echo $i[ $icon ]['url']; ?>" <?php echo ! is_null( $i['link-type'] ) ? 'target="_blank"' : ''; ?>><?php echo $icon; ?></a>
+						<a href="<?php echo $i[$icon]['url']; ?>" <?php echo ! is_null( $i['link-type'] ) ? 'target="_blank"' : ''; ?>>
+							<svg class="wosi-icon wosi-icon-<?php echo $icon; ?>">
+								<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $iconClass ); ?>"></use>
+							</svg>
+						</a>
 					</li>
 				<?php 
 					endif;
@@ -105,7 +138,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		/**
 		 * Outputs the options form on admin.
 		 *
-		 * @param array $i 	 Widget options.
+		 * @param array $i 	 	Widget options.
 		 */
 		public function form( $i ) {
 			$title = ! empty( $i['title'] ) ? $i['title'] : '';
@@ -123,6 +156,13 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 					<?php esc_attr_e( 'Open links in a new tab ?', 'wo-social-icons' ); ?>
 				</label>
 				<input id="<?php echo esc_attr( $this->get_field_id( 'link-type' ) ); ?>" type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'link-type' ) ); ?>" <?php checked( $i['link-type'], 'on' ); ?>>
+			</p>
+
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'font-size' ) ); ?>">
+					<?php esc_attr_e( 'Font Size:', 'wo-social-icons' ); ?>
+				</label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'font-size' ) ); ?>" type="number" name="<?php echo esc_attr( $this->get_field_name( 'font-size' ) ); ?>" value="<?php echo $i['font-size'] > 0 ? $i['font-size'] : 8; ?>" class="widefat" min="8">
 			</p>
 
 			<p class="alignleft radius">
@@ -153,7 +193,16 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 			</p>
 
 			<ul id="<?php echo $this->id; ?>-sortable" class="<?php echo $this->widget_options['classname']; ?>-sortable">
-				<?php foreach( $icons as $icon ) : ?>
+				<?php 
+				foreach( $icons as $icon ) : 
+					if( $icon == 'email' ) :
+						$type = 'email';
+					elseif( $icon == 'phone' ) :
+						$type = 'tel';
+					else :
+						$type = 'url';
+					endif;
+				?>
 				<li id="<?php echo $icon; ?>" data-number="<?php echo $this->number; ?>">
 					<h3><?php echo ucwords( str_replace( '-', ' ', $icon ) ); ?></h3>
 					<div>
@@ -161,7 +210,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 							<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url">
 								<?php esc_attr_e( 'URL:', 'wo-social-icons' ); ?>
 							</label>
-							<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url" class="widefat" type="url" value="<?php echo ! empty( $i[ $icon ]['url'] ) ? $i[ $icon ]['url'] : ''; ?>" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[url]">
+							<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url" class="widefat" type="<?php echo $type; ?>" value="<?php echo ! empty( $i[ $icon ]['url'] ) ? $i[ $icon ]['url'] : ''; ?>" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[url]">
 						</p>
 						<fieldset class="colors">
 							<legend>Colors</legend>
@@ -169,28 +218,28 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color">
 									<?php esc_attr_e( 'Color:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color]" value="<?php echo ! empty( $i[ $icon ]['color'] ) ? $i[ $icon ]['color'] : ''; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color]" value="<?php echo ! empty( $i[ $icon ]['color'] ) ? $i[ $icon ]['color'] : '#ffffff'; ?>">
 							</p>
 
 							<p class="alignright">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover">
 									<?php esc_attr_e( 'Hover Color:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color-hover]" value="<?php echo ! empty( $i[ $icon ]['color-hover'] ) ? $i[ $icon ]['color-hover'] : ''; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color-hover]" value="<?php echo ! empty( $i[ $icon ]['color-hover'] ) ? $i[ $icon ]['color-hover'] : '#ffffff'; ?>">
 							</p>
 
 							<p class="alignleft">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg">
 									<?php esc_attr_e( 'Background:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg]" value="<?php echo ! empty( $i[ $icon ]['bg'] ) ? $i[ $icon ]['bg'] : ''; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg]" value="<?php echo ! empty( $i[ $icon ]['bg'] ) ? $i[ $icon ]['bg'] : '#666666'; ?>">
 							</p>
 
 							<p class="alignright">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover">
 									<?php esc_attr_e( 'Hover Background:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg-hover]" value="<?php echo ! empty( $i[ $icon ]['bg-hover'] ) ? $i[ $icon ]['bg-hover'] : ''; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg-hover]" value="<?php echo ! empty( $i[ $icon ]['bg-hover'] ) ? $i[ $icon ]['bg-hover'] : '#4e4e4e'; ?>">
 							</p>
 							<div class="clear"></div>
 						</fieldset>
@@ -246,6 +295,10 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 						$styles .= '}'; 
 					endif;
 
+					$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li a {';
+						$styles .= 'font-size: ' . $iV['font-size'] . 'px;';
+					$styles .= '}'; 
+
 					foreach( $this->icons as $icon ) :
 						if( 
 							! empty( $iV[$icon]['color-hover'] ) ||
@@ -280,6 +333,8 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				endforeach;
 
 				wp_add_inline_style( 'wo-socialicons', $styles );
+
+				wp_enqueue_script( 'svgxuse', plugins_url( 'assets/js/svgxuse.js', __FILE__ ), [ 'jquery' ], $this->version, true );
 			endif;
 		}
 
@@ -300,10 +355,26 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		}
 
 		/**
+		 * Validate phone number,
+		 *
+		 * @param string | int $ph 	Phone number.
+		 *
+		 * @return bool
+		 *
+		 * @reference https://www.codespeedy.com/how-to-validate-phone-number-in-php/
+		 */
+		public function validatePhone( $ph ) {
+		     $filteredPhone = filter_var($ph, FILTER_SANITIZE_NUMBER_INT);
+		     $phoneCheck = str_replace("-", "", $filteredPhone);
+
+		     return strlen($phone_to_check) < 10 || strlen($phoneCheck) > 14 ? false : true;
+		}
+
+		/**
 		 * Processing widget options on save.
 		 *
-		 * @param array $ni 	New options.
-		 * @param array $oi 	Previous options.
+		 * @param array $ni 		New options.
+		 * @param array $oi 		Previous options.
 		 *
 		 * @return array
 		 */
@@ -322,10 +393,20 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				) :
 					$ni[$niK] = 0;
 				endif;
+
+				if( 
+					$niK == 'font-size' && 
+					( $niV == '' || ! ctype_digit( $niV ) )
+				) :
+					$ni[$niK] = 8;
+				endif;
 			endforeach;
 
 			foreach( $this->icons as $icon ) :
-				if( ! empty( $ni[$icon]['url'] ) ) :
+				if( 
+					! empty( $ni[$icon]['url'] ) &&
+					( $icon != 'email' && $icon != 'phone' )
+				) :
 					$ni[$icon]['url'] = esc_url( $ni[$icon]['url'] );
 				endif;
 

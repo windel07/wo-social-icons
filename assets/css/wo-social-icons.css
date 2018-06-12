@@ -7,5 +7,15 @@ ul.wo-social-icons > li {
 
 ul.wo-social-icons > li a {
 	padding: 0.5em;
+	line-height: 1;
 	display: block;
+}
+
+ul.wo-social-icons > li a .wosi-icon {
+	width: 1em;
+	height: 1em;
+	display: inline-block;
+	stroke-width: 0;
+	stroke: currentColor;
+	fill: currentColor;
 }

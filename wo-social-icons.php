@@ -43,6 +43,13 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		 */
 		protected $icons;
 
+		/** 
+		 * Icons set.
+		 *
+		 * @var array 
+		 */
+		protected $iconSet;
+
 		/**
 		 * Sets up the widgets name etc.
 		 */
@@ -74,6 +81,69 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				17 	=> 'vimeo',
 				18 	=> 'xing',
 				19	=> 'youtube'
+			]);
+
+			$this->iconSet = apply_filters( 'wosi_default_icons_set', [
+				'behance'		=> [
+					'behance', 'behance-square'
+				],
+				'dribbble' 		=> [
+					'dribbble'
+				],
+				'email' 		=> [
+					'envelope-o'
+				],
+				'facebook' 		=> [
+					'facebook', 'facebook-official', 'facebook-square'
+				],
+				'flickr' 		=> [
+					'flickr'
+				],
+				'github'		=> [
+					'github', 'github-square'
+				],
+				'google-plus'	=> [
+					'google-plus', 'google-plus-circle', 'google-plus-square'
+				],
+				'instagram' 	=> [
+					'instagram'
+				],
+				'linkedin'		=> [
+					'linkedin', 'linkedin-square'
+				],
+				'medium' 		=> [
+					'medium'
+				],
+				'phone'			=> [
+					'phone', 'phone-square'
+				],
+				'pinterest' 	=> [
+					'pinterest', 'pinterest-p', 'pinterest-square'
+				],
+				'rss' 			=> [
+					'rss-square'
+				],
+				'snapchat' 		=> [
+					'snapchat', 'snapchat-ghost', 'snapchat-square'
+				],
+				'stumbleupon' 		=> [
+					'stumbleupon', 'stumbleupon-circle'
+				],
+				'tumblr' 		=> [
+					'tumblr', 'tumblr-square'
+				],
+				'twitter' 		=> [
+					'twitter', 'twitter-square'
+				],
+				'vimeo' 		=> [
+					'vimeo', 'vimeo-square'
+				],
+				'xing' 		=> [
+					'xing', 'xing-square'
+				],
+				'youtube' 		=> [
+					'youtube', 'youtube-play', 'youtube-square'
+				]
 			]);
 
 			add_action( 'admin_enqueue_scripts', [ $this, 'adminEnqueueStylesScripts' ] );
@@ -108,21 +178,18 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 						$icon == 'email' &&
 						is_email( $i[$icon]['url'] ) 
 					) :
-						$iconClass = 'envelope-o';
 						$i[$icon]['url'] = 'mailto:' . $i[$icon]['url'];
 					elseif( 
 						$icon == 'phone' &&
 						$this->validatePhone( $i[$icon]['url'] )
 					) :
 						$i[$icon]['url'] = 'tel:' . $i[$icon]['url'];
-					else :
-						$iconClass = $icon;
 					endif;
 				?>
 					<li id="wosi-<?php echo $icon; ?>">
 						<a href="<?php echo $i[$icon]['url']; ?>" <?php echo ! is_null( $i['link-type'] ) ? 'target="_blank"' : ''; ?>>
 							<svg class="wosi-icon wosi-icon-<?php echo $icon; ?>">
-								<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $iconClass ); ?>"></use>
+								<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $i[$icon]['icon'] ); ?>"></use>
 							</svg>
 						</a>
 					</li>
@@ -207,6 +274,20 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 					<h3><?php echo ucwords( str_replace( '-', ' ', $icon ) ); ?></h3>
 					<div>
 						<p>
+							<ul class="icon-set">
+								<?php foreach( $this->iconSet[$icon] as $ics ) : ?>
+								<li>
+									<input id="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>" type="radio" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[icon]" value="<?php echo $ics; ?>" <?php is_array( $i[$icon] ) && array_key_exists( 'icon', $i[$icon] ) ? checked( $i[$icon]['icon'], $ics ) : checked( $this->iconSet[$icon][0], $ics ); ?>>
+									<label for="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>">
+										<svg class="wosi-icon wosi-icon-<?php echo $ics; ?>">
+											<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $ics ); ?>"></use>
+										</svg>
+									</label>
+								</li>
+								<?php endforeach; ?>
+							</ul>
+						</p>
+						<p>
 							<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url">
 								<?php esc_attr_e( 'URL:', 'wo-social-icons' ); ?>
 							</label>
@@ -261,6 +342,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 
 			wp_register_script( 'wo-social-icons', plugins_url( 'assets/js/script.js', __FILE__ ), [ 'jquery', 'jquery-ui-accordion', 'jquery-ui-sortable', 'wp-color-picker' ], $this->version, true );
 			wp_enqueue_script( 'wo-social-icons' );
+			wp_enqueue_script( 'svgxuse', plugins_url( 'assets/js/svgxuse.js', __FILE__ ), [ 'jquery' ], $this->version, true );
 			wp_localize_script(
 				'wo-social-icons',
 				'wosi',
@@ -394,6 +476,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 					$ni[$niK] = 0;
 				endif;
 
+				// Validate font size.
 				if( 
 					$niK == 'font-size' && 
 					( $niV == '' || ! ctype_digit( $niV ) )
@@ -402,6 +485,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				endif;
 			endforeach;
 
+			// Icons
 			foreach( $this->icons as $icon ) :
 				if( 
 					! empty( $ni[$icon]['url'] ) &&

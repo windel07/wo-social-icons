@@ -51,6 +51,40 @@
 	display: block;
 }
 
+.widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set > li {
+	margin: auto;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set > li input[type="radio"] {
+	display: none;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set > li input[type="radio"] + label {
+	color: #cfcfcf;
+	padding: 0.2em;
+	margin-right: 0.1em;
+	border: 2px solid #cfcfcf;
+	border-radius: 0.2em;
+	font-size: 1.7em;
+	display: block;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set > li input[type="radio"]:checked + label {
+	color: #f0b43b;
+	border: 2px solid #f0b43b;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set > li input[type="radio"] + label .wosi-icon {
+	width: 1em;
+	height: 1em;
+	display: inline-block;
+	stroke-width: 0;
+	stroke: currentColor;
+	fill: currentColor;
+}
+
 .widget .wo_social_icons-sortable > li .ui-accordion-content .colors legend {
 	color: #757575;
 	padding: 0 0 10px;

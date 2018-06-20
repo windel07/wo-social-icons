@@ -9,13 +9,30 @@ ul.wo-social-icons > li a {
 	padding: 0.5em;
 	line-height: 1;
 	display: block;
+	position: relative;
+	z-index: 1;
 }
 
-ul.wo-social-icons > li a .wosi-icon {
+ul.wo-social-icons > li a .wosi-icon,
+ul.wo-social-icons > li a object * {
 	width: 1em;
 	height: 1em;
 	display: inline-block;
 	stroke-width: 0;
 	stroke: currentColor;
 	fill: currentColor;
+}
+
+ul.wo-social-icons > li a .wosi-icon-image {
+	max-width: 100%;
+	display: block;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+
+ul.wo-social-icons > li a object {
+	margin: auto;
+	position: relative;
+	z-index: -1;
 }

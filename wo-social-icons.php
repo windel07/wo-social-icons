@@ -34,7 +34,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		 *
 		 * @var string
 		 */
-		protected $version = '1.0.0';
+		protected $version;
 
 		/**
 		 * Icons.
@@ -59,6 +59,8 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				'description' 	=> 'Advanced social icons widget.',
 			];
 			parent::__construct( 'wo_social_icons', 'WO Social Icons', $widgetOps );
+
+			$this->version = '1.0.0';
 
 			$this->icons = apply_filters( 'wosi_default_icons', [
 				0	=> 'behance',
@@ -151,6 +153,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 			add_action( 'wp_ajax_ajaxReorderIcons', [ $this, 'ajaxReorderIcons' ] );
 
 			add_action( 'wp_enqueue_scripts', [ $this, 'enqueueStylesScripts' ] );
+			add_filter( 'upload_mimes', [ $this, 'addMimeTypes' ] );
 		}
 
 		/**
@@ -188,9 +191,29 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				?>
 					<li id="wosi-<?php echo $icon; ?>">
 						<a href="<?php echo $i[$icon]['url']; ?>" <?php echo ! is_null( $i['link-type'] ) ? 'target="_blank"' : ''; ?>>
+							<?php 
+							if( ! empty( $i[$icon]['custom-icon'] ) ) : 
+								$iconMetaData = get_post_meta( $i[$icon]['custom-icon'] );
+								$iconMimeType = get_post_mime_type( $i[$icon]['custom-icon'] );
+								$iconSize = $i['font-size'] * 2;
+
+								if( $iconMimeType == 'image/png' ) :
+									echo wp_get_attachment_image( $i[$icon]['custom-icon'], [ $iconSize, $iconSize, [ 'center' ] ], true, [ 'class' => 'wosi-icon-image' ] );
+								else :
+							?>
+								<span>
+									<object data="<?php echo wp_get_attachment_url( $i[$icon]['custom-icon'] ); ?>" type="image/svg+xml" width="<?php echo $i['font-size']; ?>" height="<?php echo $i['font-size']; ?>" data-color="<?php echo $i[$icon]['color']; ?>" data-hcolor="<?php echo $i[$icon]['color-hover']; ?>">
+										<?php echo wp_get_attachment_image( $i[$icon]['custom-icon'], [ $iconSize, $iconSize, [ 'center' ] ], true, [ 'class' => 'wosi-icon-image' ] ); ?>
+									</object>
+								</span>
+							<?php
+								endif; 
+							else : 
+							?>
 							<svg class="wosi-icon wosi-icon-<?php echo $icon; ?>">
-								<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $i[$icon]['icon'] ); ?>"></use>
+								<use xlink:href="<?php echo ! empty( $i[$icon]['icon'] ) ? esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $i[$icon]['icon'] ) : esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $this->iconSet[$icon][0] ); ?>"></use>
 							</svg>
+							<?php endif; ?>
 						</a>
 					</li>
 				<?php 
@@ -273,11 +296,12 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				<li id="<?php echo $icon; ?>" data-number="<?php echo $this->number; ?>">
 					<h3><?php echo ucwords( str_replace( '-', ' ', $icon ) ); ?></h3>
 					<div>
-						<p>
+						<div class="alignleft">
+							<label><?php esc_attr_e( 'Select Icon :', 'wo-social-icons' ); ?></label>
 							<ul class="icon-set">
 								<?php foreach( $this->iconSet[$icon] as $ics ) : ?>
 								<li>
-									<input id="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>" type="radio" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[icon]" value="<?php echo $ics; ?>" <?php is_array( $i[$icon] ) && array_key_exists( 'icon', $i[$icon] ) ? checked( $i[$icon]['icon'], $ics ) : checked( $this->iconSet[$icon][0], $ics ); ?>>
+									<input id="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>" type="radio" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[icon]" value="<?php echo $ics; ?>" <?php empty( $i[$icon]['custom-icon'] ) ? is_array( $i[$icon] ) && array_key_exists( 'icon', $i[$icon] ) ? checked( $i[$icon]['icon'], $ics ) : checked( $this->iconSet[$icon][0], $ics ) : ''; ?>>
 									<label for="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>">
 										<svg class="wosi-icon wosi-icon-<?php echo $ics; ?>">
 											<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $ics ); ?>"></use>
@@ -286,12 +310,32 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								</li>
 								<?php endforeach; ?>
 							</ul>
-						</p>
+						</div>
+						<div class="hide-if-no-js alignright wosi-media">
+							<label for="<?php echo esc_attr( $this->get_field_id( $icon . '-custom-icon' ) ); ?>">
+								<?php esc_attr_e( 'or Upload Icon ( png, svg ) :', 'wo-social-icons' ); ?>
+							</label>
+							<div class="wosi-icon-holder">
+								<?php echo ! empty( $i[$icon]['custom-icon'] ) ? wp_get_attachment_image( $i[$icon]['custom-icon'], 'full', false, [] ) : ''; ?>
+							</div>
+							<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-custom-icon" type="hidden" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[custom-icon]" value="<?php echo ! empty( $i[$icon]['custom-icon'] ) ? $i[$icon]['custom-icon'] : ''; ?>">
+							<div class="wosi-media-buttons">
+								<button class="button wosi-add-media <?php echo ! empty( $i[$icon]['custom-icon'] ) ? 'hidden' : ''; ?>" type="button">
+									<?php esc_attr_e( 'Add Icon', 'wo-social-icons' ); ?>
+								</button>
+								<button class="button-link button-link-delete wosi-delete-media <?php echo empty( $i[$icon]['custom-icon'] ) ? 'hidden' : ''; ?>" type="button">
+									<?php esc_attr_e( 'Remove', 'wo-social-icons' ); ?>
+								</button>
+							</div>
+						</div>
+
+						<p class="clear"></p>
+
 						<p>
 							<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url">
 								<?php esc_attr_e( 'URL:', 'wo-social-icons' ); ?>
 							</label>
-							<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url" class="widefat" type="<?php echo $type; ?>" value="<?php echo ! empty( $i[ $icon ]['url'] ) ? $i[ $icon ]['url'] : ''; ?>" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[url]">
+							<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-url" class="widefat" type="<?php echo $type; ?>" value="<?php echo ! empty( $i[$icon]['url'] ) ? $i[$icon]['url'] : ''; ?>" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[url]">
 						</p>
 						<fieldset class="colors">
 							<legend>Colors</legend>
@@ -299,28 +343,28 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color">
 									<?php esc_attr_e( 'Color:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color]" value="<?php echo ! empty( $i[ $icon ]['color'] ) ? $i[ $icon ]['color'] : '#ffffff'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color]" value="<?php echo ! empty( $i[$icon]['color'] ) ? $i[$icon]['color'] : '#ffffff'; ?>">
 							</p>
 
 							<p class="alignright">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover">
 									<?php esc_attr_e( 'Hover Color:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color-hover]" value="<?php echo ! empty( $i[ $icon ]['color-hover'] ) ? $i[ $icon ]['color-hover'] : '#ffffff'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color-hover]" value="<?php echo ! empty( $i[$icon]['color-hover'] ) ? $i[$icon]['color-hover'] : '#ffffff'; ?>">
 							</p>
 
 							<p class="alignleft">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg">
 									<?php esc_attr_e( 'Background:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg]" value="<?php echo ! empty( $i[ $icon ]['bg'] ) ? $i[ $icon ]['bg'] : '#666666'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg]" value="<?php echo ! empty( $i[$icon]['bg'] ) ? $i[$icon]['bg'] : '#666666'; ?>">
 							</p>
 
 							<p class="alignright">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover">
 									<?php esc_attr_e( 'Hover Background:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg-hover]" value="<?php echo ! empty( $i[ $icon ]['bg-hover'] ) ? $i[ $icon ]['bg-hover'] : '#4e4e4e'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg-hover]" value="<?php echo ! empty( $i[$icon]['bg-hover'] ) ? $i[$icon]['bg-hover'] : '#4e4e4e'; ?>">
 							</p>
 							<div class="clear"></div>
 						</fieldset>
@@ -337,6 +381,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 		public function adminEnqueueStylesScripts( $h ) {
 			if( $h != 'widgets.php' ) return;
 
+			wp_enqueue_media();
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_style( 'wo-social-icons', plugins_url( 'assets/css/style.css', __FILE__ ), '', $this->version );
 
@@ -416,8 +461,24 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 
 				wp_add_inline_style( 'wo-socialicons', $styles );
 
-				wp_enqueue_script( 'svgxuse', plugins_url( 'assets/js/svgxuse.js', __FILE__ ), [ 'jquery' ], $this->version, true );
+				wp_register_script( 'svgxuse', plugins_url( 'assets/js/svgxuse.js', __FILE__ ), [ 'jquery' ], $this->version, true );
+				wp_register_script( 'jquery-svg-es5', plugins_url( 'assets/js/jquery.svg.es5.min.js', __FILE__ ), ['jquery'], $this->version, true );
+				wp_register_script( 'jquery-svg', plugins_url( 'assets/js/jquery.svg.js', __FILE__ ), [ 'jquery' ], $this->version, true );
+				wp_enqueue_script( 'wo-social-icons', plugins_url( 'assets/js/wo-social-icons.js', __FILE__ ), [ 'jquery', 'svgxuse', 'jquery-svg-es5', 'jquery-svg' ], $this->version, true );
 			endif;
+		}
+
+		/**
+		 * Add mime types filter.
+		 *
+		 * @param $m 				Existing mime types.
+		 *
+		 * @return array
+		 */
+		public function addMimeTypes( $m ) {
+			$m['svg'] = 'image/svg+xml';
+
+			return $m;
 		}
 
 		/**

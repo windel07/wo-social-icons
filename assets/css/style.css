@@ -23,13 +23,27 @@
 
 .widget .wo_social_icons-sortable > li h3.ui-accordion-header {
 	background-color: #fafafa;
-	padding: 10px;
+	padding: 0.75em 2em 0.75em 0.75em;
 	margin: auto;
 	border: 1px solid #e5e5e5;
 	font-size: 1em;
 	font-weight: 400;
 	cursor: move;
 	position: relative;
+}
+
+.widget .wo_social_icons-sortable > li h3.ui-accordion-header::after {
+	content: '\f140';
+	font-family: 'dashicons';
+	font-size: 1.4em;
+	font-weight: 400;
+	position: absolute;
+	top: 0.55em;
+	right: 0.5em;
+}
+
+.widget .wo_social_icons-sortable > li h3.ui-accordion-header.ui-accordion-header-active::after {
+	content: '\f142';
 }
 
 .widget .wo_social_icons-sortable > li h3.ui-accordion-header.ui-state-hover {
@@ -42,13 +56,27 @@
 	border-top: 0;
 }
 
+.widget .wo_social_icons-sortable > li .ui-accordion-content .alignleft,
+.widget .wo_social_icons-sortable > li .ui-accordion-content .alignright {
+	width: calc( 50% - 0.5em );
+	padding: 0 0.5em 0 0;
+}
+
+ .widget .wo_social_icons-sortable > li .ui-accordion-content .alignright {
+ 	padding: 0 0 0 0.5em;
+ }
+
 .widget .wo_social_icons-sortable > li .ui-accordion-content p {
-	margin: 0 auto 10px;
+	margin: 0 auto 0.75em;
 }
 
 .widget .wo_social_icons-sortable > li .ui-accordion-content p label {
-	margin: 0 auto 5px;
+	margin: 0 auto 0.5em;
 	display: block;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set {
+	margin: 1em auto 0;
 }
 
 .widget .wo_social_icons-sortable > li .ui-accordion-content .icon-set > li {
@@ -85,6 +113,15 @@
 	fill: currentColor;
 }
 
+.widget .wo_social_icons-sortable > li .ui-accordion-content .wosi-media .wosi-icon-holder {
+	margin: 0 auto 1em;
+}
+
+.widget .wo_social_icons-sortable > li .ui-accordion-content .wosi-media .wosi-icon-holder img {
+	max-width: 100%;
+	margin: 0.5em auto 0;
+}
+
 .widget .wo_social_icons-sortable > li .ui-accordion-content .colors legend {
 	color: #757575;
 	padding: 0 0 10px;
@@ -94,7 +131,6 @@
 }
 
 .widget .wo_social_icons-sortable > li .ui-accordion-content .colors > p:not(.clear) {
-	width: 50%;
 	margin: auto;
 }
 

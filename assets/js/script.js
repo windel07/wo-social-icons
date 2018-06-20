@@ -9,6 +9,71 @@
 	});	
 
 	/**
+	 * Renders WP Media Uploader.
+	 *
+	 * Displays the media uploader for selecting an image.
+	 *
+	 * @since 0.1.0
+	 */
+	function renderMediaUploader( mediaContainer ) {
+	    'use strict';
+	 
+	    var fileFrame, 
+	    	file,
+	    	iconContainer;
+	
+	    if( fileFrame !== undefined ) {
+	        fileFrame.open();
+	        return;
+	    }
+	 
+	    fileFrame = wp.media.frames.fileFrame = wp.media({
+	    	title 		: 'Select or Upload your icon.',
+	        frame 		: 'post',
+	        state 		: 'insert',
+	        library 	: {
+	        	type 		: [ 'image/svg', 'image/svg+xml', 'image/png' ]
+	        },
+	        multiple 	: false,
+	        button 		: {
+	    		text 		: 'Use this icon'
+	    	}
+	    });
+	 
+	    /**
+	     * On insert
+	     */
+	    fileFrame.on( 'insert', function() {
+			var attachment = fileFrame.state().get( 'selection' ).first().toJSON();
+
+			mediaContainer.find( '.wosi-icon-holder' ).html( '<img src="' + attachment.url + '" alt="' + attachment.title + '"/>' );
+			mediaContainer.find( 'input[type="hidden"]' ).val( attachment.id );
+
+			mediaContainer.find( '.wosi-media-buttons .wosi-add-media' ).addClass( 'hidden' );
+			mediaContainer.find( '.wosi-media-buttons .wosi-delete-media' ).removeClass( 'hidden' );
+	    });
+	 
+	    fileFrame.open();
+
+	    $( "#widget-" + wosi.id + "-savewidget" ).removeAttr( 'disabled' );
+	}
+
+	/**
+	 * Remove media.
+	 */
+	function removeMedia( mediaContainer ) {
+		'use strict';
+
+		mediaContainer.find( '.wosi-icon-holder' ).html( '' );
+	    mediaContainer.find( 'input[type="hidden"]' ).val( '' );
+
+	    mediaContainer.find( '.wosi-media-buttons .wosi-add-media' ).removeClass( 'hidden' );
+		mediaContainer.find( '.wosi-media-buttons .wosi-delete-media' ).addClass( 'hidden' );
+
+		$( "#widget-" + wosi.id + "-savewidget" ).removeAttr( 'disabled' );
+	}
+
+	/**
 	 * Initilialize.
 	 */
 	function init( el ) {
@@ -76,4 +141,20 @@
 			init( $( this ).find( '.wo_social_icons-sortable' ) );
 		});
 	});
+
+	$( document ).on( 'click', '.wosi-add-media', function( e ) {
+        e.preventDefault();
+        var _this = $( this ),
+        	media = _this.closest( '.wosi-media' );
+
+        renderMediaUploader( media );
+    });
+
+    $( document ).on( 'click', '.wosi-delete-media', function( e ){
+	    e.preventDefault();
+	    var _this = $( this ),
+	    	media = _this.closest( '.wosi-media' );
+
+	    removeMedia( media );
+	  });
 })(jQuery);

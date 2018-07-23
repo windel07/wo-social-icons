@@ -252,14 +252,14 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				<label for="<?php echo esc_attr( $this->get_field_id( 'font-size' ) ); ?>">
 					<?php esc_attr_e( 'Font Size:', 'wo-social-icons' ); ?>
 				</label>
-				<input id="<?php echo esc_attr( $this->get_field_id( 'font-size' ) ); ?>" type="number" name="<?php echo esc_attr( $this->get_field_name( 'font-size' ) ); ?>" value="<?php echo $i['font-size'] > 0 ? $i['font-size'] : 8; ?>" class="widefat" min="8">
+				<input id="<?php echo esc_attr( $this->get_field_id( 'font-size' ) ); ?>" type="number" name="<?php echo esc_attr( $this->get_field_name( 'font-size' ) ); ?>" value="<?php echo $i['font-size'] > 0 ? $i['font-size'] : 8; ?>" class="widefat" min="8" step="0.01">
 			</p>
 
 			<p class="alignleft radius">
 				<label for="<?php echo esc_attr( $this->get_field_id( 'radius' ) ); ?>">
 					<?php esc_attr_e( 'Radius:', 'wo-social-icons' ); ?>
 				</label>
-				<input id="<?php echo esc_attr( $this->get_field_id( 'radius' ) ); ?>" type="number" name="<?php echo esc_attr( $this->get_field_name( 'radius' ) ); ?>" value="<?php echo $i['radius'] > 0 ? $i['radius'] : 0; ?>" class="widefat" min="0">
+				<input id="<?php echo esc_attr( $this->get_field_id( 'radius' ) ); ?>" type="number" name="<?php echo esc_attr( $this->get_field_name( 'radius' ) ); ?>" value="<?php echo $i['radius'] > 0 ? $i['radius'] : 0; ?>" class="widefat" min="0" step="0.01">
 			</p>
 
 			<p class="alignright unit">
@@ -532,7 +532,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				// Validate border radius.
 				if( 
 					$niK == 'radius' && 
-					( $niV == '' || ! ctype_digit( $niV ) )
+					( $niV == '' || ! is_numeric( $niV ) )
 				) :
 					$ni[$niK] = 0;
 				endif;
@@ -540,7 +540,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				// Validate font size.
 				if( 
 					$niK == 'font-size' && 
-					( $niV == '' || ! ctype_digit( $niV ) )
+					( $niV == '' || ! is_numeric( $niV ) )
 				) :
 					$ni[$niK] = 8;
 				endif;

@@ -214,6 +214,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								<use xlink:href="<?php echo ! empty( $i[$icon]['icon'] ) ? esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $i[$icon]['icon'] ) : esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $this->iconSet[$icon][0] ); ?>"></use>
 							</svg>
 							<?php endif; ?>
+							<span class="wosi-icon-text"><?php echo ucwords(str_replace("-", " ", $icon)); ?></span>
 						</a>
 					</li>
 				<?php 

@@ -299,6 +299,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 					<div>
 						<div class="alignleft">
 							<label><?php esc_attr_e( 'Select Icon :', 'wo-social-icons' ); ?></label>
+							<?php if( is_array($this->iconSet[$icon]) && count($this->iconSet[$icon]) ) : ?>
 							<ul class="icon-set">
 								<?php foreach( $this->iconSet[$icon] as $ics ) : ?>
 								<li>
@@ -311,6 +312,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								</li>
 								<?php endforeach; ?>
 							</ul>
+							<?php endif; ?>
 						</div>
 						<div class="hide-if-no-js alignright wosi-media">
 							<label for="<?php echo esc_attr( $this->get_field_id( $icon . '-custom-icon' ) ); ?>">

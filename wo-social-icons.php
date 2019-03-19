@@ -81,8 +81,9 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				15 	=> 'tumblr',
 				16 	=> 'twitter',
 				17 	=> 'vimeo',
-				18 	=> 'xing',
-				19	=> 'youtube'
+				18 	=> 'wordpress',
+				19 	=> 'xing',
+				20	=> 'youtube'
 			]);
 
 			$this->iconSet = apply_filters( 'wosi_default_icons_set', [
@@ -140,7 +141,10 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 				'vimeo' 		=> [
 					'vimeo', 'vimeo-square'
 				],
-				'xing' 		=> [
+				'wordpress'		=> [
+					'wordpress'
+				],
+				'xing' 			=> [
 					'xing', 'xing-square'
 				],
 				'youtube' 		=> [
@@ -346,28 +350,28 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color">
 									<?php esc_attr_e( 'Color:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color]" value="<?php echo ! empty( $i[$icon]['color'] ) ? $i[$icon]['color'] : '#ffffff'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color]" value="<?php echo ! empty( $i[$icon]['color'] ) ? $i[$icon]['color'] : ''; ?>">
 							</p>
 
 							<p class="alignright">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover">
 									<?php esc_attr_e( 'Hover Color:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color-hover]" value="<?php echo ! empty( $i[$icon]['color-hover'] ) ? $i[$icon]['color-hover'] : '#ffffff'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-color-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[color-hover]" value="<?php echo ! empty( $i[$icon]['color-hover'] ) ? $i[$icon]['color-hover'] : ''; ?>">
 							</p>
 
 							<p class="alignleft">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg">
 									<?php esc_attr_e( 'Background:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg]" value="<?php echo ! empty( $i[$icon]['bg'] ) ? $i[$icon]['bg'] : '#666666'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg]" value="<?php echo ! empty( $i[$icon]['bg'] ) ? $i[$icon]['bg'] : ''; ?>">
 							</p>
 
 							<p class="alignright">
 								<label for="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover">
 									<?php esc_attr_e( 'Hover Background:', 'wo-social-icons' ); ?>
 								</label>
-								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg-hover]" value="<?php echo ! empty( $i[$icon]['bg-hover'] ) ? $i[$icon]['bg-hover'] : '#4e4e4e'; ?>">
+								<input id="<?php echo esc_attr( $this->get_field_id( $icon ) ); ?>-bg-hover" type="text" class="wosi-color-picker" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[bg-hover]" value="<?php echo ! empty( $i[$icon]['bg-hover'] ) ? $i[$icon]['bg-hover'] : ''; ?>">
 							</p>
 							<div class="clear"></div>
 						</fieldset>

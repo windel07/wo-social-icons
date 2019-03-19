@@ -215,7 +215,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 							else : 
 							?>
 							<svg class="wosi-icon wosi-icon-<?php echo $icon; ?>">
-								<use xlink:href="<?php echo ! empty( $i[$icon]['icon'] ) ? esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $i[$icon]['icon'] ) : esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $this->iconSet[$icon][0] ); ?>"></use>
+								<use xlink:href="<?php echo ! empty( $i[$icon]['icon'] ) ? esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-icon-' . $i[$icon]['icon'] ) : esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-icon-' . $this->iconSet[$icon][0] ); ?>"></use>
 							</svg>
 							<?php endif; ?>
 							<span class="wosi-icon-text"><?php echo ucwords(str_replace("-", " ", $icon)); ?></span>
@@ -310,7 +310,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 									<input id="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>" type="radio" name="<?php echo esc_attr( $this->get_field_name( $icon ) ); ?>[icon]" value="<?php echo $ics; ?>" <?php empty( $i[$icon]['custom-icon'] ) ? is_array( $i[$icon] ) && array_key_exists( 'icon', $i[$icon] ) ? checked( $i[$icon]['icon'], $ics ) : checked( $this->iconSet[$icon][0], $ics ) : ''; ?>>
 									<label for="<?php echo esc_attr( $this->get_field_id( $ics ) ); ?>">
 										<svg class="wosi-icon wosi-icon-<?php echo $ics; ?>">
-											<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-' . $ics ); ?>"></use>
+											<use xlink:href="<?php echo esc_url( plugin_dir_url( __FILE__ ) . 'assets/img/symbol-defs.svg#wosi-icon-' . $ics ); ?>"></use>
 										</svg>
 									</label>
 								</li>
@@ -438,7 +438,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 							! empty( $iV[$icon]['color-hover'] ) ||
 							! empty( $iV[$icon]['bg-hover'] )
 						) :
-							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-' . $icon . ' a {';
+							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-icon-' . $icon . ' a {';
 								if( ! empty( $iV[$icon]['color'] ) ) :
 									$styles .= 'color: ' . $iV[$icon]['color'] . ';';
 								endif;
@@ -453,7 +453,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 							! empty( $iV[$icon]['color-hover'] ) ||
 							! empty( $iV[$icon]['bg-hover'] )
 						) :
-							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-' . $icon . ' a:hover {';
+							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-icon-' . $icon . ' a:hover {';
 								if( ! empty( $iV[$icon]['color-hover'] ) ) :
 									$styles .= 'color: ' . $iV[$icon]['color-hover'] . ';';
 								endif;

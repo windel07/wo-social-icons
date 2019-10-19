@@ -2,7 +2,7 @@
 /*
 Plugin Name: WO Social Icons
 Plugin URI: https://github.com/WindelOira/wo-social-icons
-Description: A simple WordPress plugin template
+Description: Flexible social media plugin for wordpress.
 Version: 1.0
 Author: Windel Kien L. Oira
 Author URI: https://github.com/WindelOira

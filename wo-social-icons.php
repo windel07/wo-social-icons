@@ -202,12 +202,16 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 								$iconSize = $i['font-size'] * 2;
 
 								if( $iconMimeType == 'image/png' ) :
-									echo wp_get_attachment_image( $i[$icon]['custom-icon'], [ $iconSize, $iconSize, [ 'center' ] ], true, [ 'class' => 'wosi-icon-image' ] );
+									echo wp_get_attachment_image( $i[$icon]['custom-icon'], 'full', true, [ 'class' => 'wosi-icon-image' ] );
 								else :
 							?>
 								<span>
-									<object data="<?php echo wp_get_attachment_url( $i[$icon]['custom-icon'] ); ?>" type="image/svg+xml" width="<?php echo $i['font-size']; ?>" height="<?php echo $i['font-size']; ?>" data-color="<?php echo $i[$icon]['color']; ?>" data-hcolor="<?php echo $i[$icon]['color-hover']; ?>">
-										<?php echo wp_get_attachment_image( $i[$icon]['custom-icon'], [ $iconSize, $iconSize, [ 'center' ] ], true, [ 'class' => 'wosi-icon-image' ] ); ?>
+									<object data="<?php echo wp_get_attachment_url( $i[$icon]['custom-icon'] ); ?>" 
+											width="<?php echo $i['font-size']; ?>" 
+											height="<?php echo $i['font-size']; ?>" data-color="<?php echo $i[$icon]['color']; ?>" 
+											data-hcolor="<?php echo $i[$icon]['color-hover']; ?>" 
+											type="image/svg+xml">
+										<?php echo wp_get_attachment_image( $i[$icon]['custom-icon'], 'full', true, [ 'class' => 'wosi-icon-image' ] ); ?>
 									</object>
 								</span>
 							<?php
@@ -435,10 +439,10 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 
 					foreach( $this->icons as $icon ) :
 						if( 
-							! empty( $iV[$icon]['color-hover'] ) ||
-							! empty( $iV[$icon]['bg-hover'] )
+							! empty( $iV[$icon]['color'] ) ||
+							! empty( $iV[$icon]['bg'] )
 						) :
-							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-icon-' . $icon . ' a {';
+							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-' . $icon . ' a {';
 								if( ! empty( $iV[$icon]['color'] ) ) :
 									$styles .= 'color: ' . $iV[$icon]['color'] . ';';
 								endif;
@@ -453,7 +457,7 @@ if( ! class_exists( 'WO_SocialIcons' ) ) :
 							! empty( $iV[$icon]['color-hover'] ) ||
 							! empty( $iV[$icon]['bg-hover'] )
 						) :
-							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-icon-' . $icon . ' a:hover {';
+							$styles .= '#' . $this->id_base . '-' . $iK . ' ul.wo-social-icons > li#wosi-' . $icon . ' a:hover {';
 								if( ! empty( $iV[$icon]['color-hover'] ) ) :
 									$styles .= 'color: ' . $iV[$icon]['color-hover'] . ';';
 								endif;
